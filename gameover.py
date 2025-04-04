@@ -57,7 +57,6 @@ class GameOver:
             text_shadow = self.text_font.render(button["text"], True, self.shadow_color)
             text_rect = text.get_rect(center=button["rect"].center)
 
-
             self.display_surface.blit(text_shadow, (text_rect.x + 1, text_rect.y + 1))
             self.display_surface.blit(text, text_rect)
 

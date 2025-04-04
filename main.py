@@ -390,6 +390,7 @@ class Game:
     def respawn_collectibles(self, rect, value):
         """
         Creates an instance of collectible Money class in the map
+        :param value: value of the collectible
         :param rect: location of the entity
         """
         money = Money(self.money,

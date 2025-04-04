@@ -19,10 +19,10 @@ class SpriteSheet:
     def __init__(self, sheet, width, height, scale=1, format='png'):
         """
         Handles proper spritesheet loading and splitting then into separate images
-        :param sheet: whole spritesheet
-        :param width: spritesheet width
-        :param height: spritesheet height
-        :param scale: spritesheet scale (scales as the settings.py atribute SCALE)
+        :param sheet: whole spritesheet,
+        :param width: spritesheet width,
+        :param height: spritesheet height,
+        :param scale: spritesheet scale (scales as the settings.py atribute SCALE),
         :param format: png/jpg etc.
         """
         self.sheet = sheet

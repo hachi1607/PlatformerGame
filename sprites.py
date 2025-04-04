@@ -30,26 +30,33 @@ class AnimatedSprite(Sprite):
         self.flip = False
         super().__init__(pos, self.animations[self.state][0], groups)
 
+    def animate(self, dt):
+        speed = self.animation_speed['idle']
+        self.frame_index += speed * dt
+
+        self.image = self.animations['idle'][int(self.frame_index) % len(self.animations['idle'])]
+        self.image = pygame.transform.flip(self.image, self.flip, False)
+
 
 class Player(AnimatedSprite):
     def __init__(self, pos, groups, collision_sprites, entities, animations):
         super().__init__(animations, pos, groups)
         self.flip = False  # player model flip flag
-        self.attacking = False # boolean flag if player is currently attacking
-        self.attack_timer = 0 # counts the time of the whole attack
-        self.attack_cd = Timer(500) # cooldown between the attacks
+        self.attacking = False  # boolean flag if player is currently attacking
+        self.attack_timer = 0  # counts the time of the whole attack
+        self.attack_cd = Timer(500)  # cooldown between the attacks
         # self.death_timer = Timer(1000, self.kill) # scratched concept
 
         # movement, collisions
-        self.direction = pygame.Vector2() # current direction
-        self.collision_sprites = collision_sprites # collision spirtes such as terrain
-        self.entities = entities # entites such as enemies or collectibles
-        self.speed = SPEED # current player speed
-        self.gravity = GRAVITY # gravity force
-        self.on_floor = False # checks if player is currently on the floor
-        self.max_health = 4 # player max hp
-        self.health = self.max_health # set current health at initializing at max health
-        self.dead = False # checks if player died
+        self.direction = pygame.Vector2()  # current direction
+        self.collision_sprites = collision_sprites  # collision spirtes such as terrain
+        self.entities = entities  # entites such as enemies or collectibles
+        self.speed = SPEED  # current player speed
+        self.gravity = GRAVITY  # gravity force
+        self.on_floor = False  # checks if player is currently on the floor
+        self.max_health = 4  # player max hp
+        self.health = self.max_health  # set current health at initializing at max health
+        self.dead = False  # checks if player died
         # self.inputs_on = True
         # self.can_collide = True
 
@@ -201,7 +208,7 @@ class Player(AnimatedSprite):
 class Enemy(AnimatedSprite):
     def __init__(self, rect, groups, collision_sprites, entities, animations, create_projectile):
         super().__init__(animations, rect.topleft, groups)
-        self.create_projectile = create_projectile #calling creating projectile if conditions met
+        self.create_projectile = create_projectile  # calling creating projectile if conditions met
 
         # animations speed for each state
         self.animation_speeds = {
@@ -214,7 +221,7 @@ class Enemy(AnimatedSprite):
         }
         # enemy rect position
         self.rect.bottomleft = rect.bottomleft
-        self.patrol_rect = rect # patrol rect for tracking enemy are bounds
+        self.patrol_rect = rect  # patrol rect for tracking enemy are bounds
         self.patrol_left = rect.left
         self.patrol_right = rect.right
 
@@ -223,25 +230,25 @@ class Enemy(AnimatedSprite):
             self.patrol_left = rect.left
             self.patrol_right = rect.right
 
-        self.direction = pygame.Vector2() # direction vector
-        self.direction.x = random.choice([-1, 1]) # random direction when spawning in
-        self.collision_sprites = collision_sprites # groups passed in
+        self.direction = pygame.Vector2()  # direction vector
+        self.direction.x = random.choice([-1, 1])  # random direction when spawning in
+        self.collision_sprites = collision_sprites  # groups passed in
         self.entities = entities
-        self.speed = randint(SPEED - 200, SPEED) * 0.4 # random speed for every instance of an enemy
-        self.gravity = GRAVITY # gravity from settings
-        self.on_floor = False # check if enemy on floor (not neccessary)
-        self.flip = False # enemy flip flag
-        self.dead = False # chceck if the enemy is dead flag
+        self.speed = randint(SPEED - 200, SPEED) * 0.4  # random speed for every instance of an enemy
+        self.gravity = GRAVITY  # gravity from settings
+        self.on_floor = False  # check if enemy on floor (not neccessary)
+        self.flip = False  # enemy flip flag
+        self.dead = False  # chceck if the enemy is dead flag
 
-        self.value = 250 # point value for killing the enemy
+        self.value = 250  # point value for killing the enemy
 
-        self.all_sprites = groups[0] # all sprites group passed in
+        self.all_sprites = groups[0]  # all sprites group passed in
 
-        self.detection_range = 160 * SCALE # player detection range
-        self.player_detected = False # if player detected flag
-        self.attack_cd = Timer(randint(3,25)*100) # random attack cooldown
+        self.detection_range = 160 * SCALE  # player detection range
+        self.player_detected = False  # if player detected flag
+        self.attack_cd = Timer(randint(3, 25) * 100)  # random attack cooldown
 
-        self.attacking = False # check if enemy is attacking flag
+        self.attacking = False  # check if enemy is attacking flag
         self.attack_timer = 0  # attack speed duration counter
 
         # Hitbox setup
@@ -263,7 +270,7 @@ class Enemy(AnimatedSprite):
         Enemy moving mechanic
         :param dt:
         """
-        self.patrol() # patroling as default behaviour
+        self.patrol()  # patroling as default behaviour
         # Update hitbox position
         self.hitbox.midbottom = self.rect.midbottom
 
@@ -328,21 +335,22 @@ class Enemy(AnimatedSprite):
                 x_distance = entity.hitbox.centerx - self.hitbox.centerx
                 y_distance = abs(entity.hitbox.centery - self.hitbox.centery)
 
-                y_threshold = 50 * SCALE # distance for player to be spotted
+                y_threshold = 50 * SCALE  # distance for player to be spotted
 
                 # if x distance of the player smaller than detection range, detect player
                 if abs(x_distance) <= self.detection_range and y_distance <= y_threshold:
-                    if not self.player_detected: # if the flag is not set yet:
-                        if not hasattr(self, 'saved_direction'): # save movement direction if player leave detection zone
+                    if not self.player_detected:  # if the flag is not set yet:
+                        if not hasattr(self,
+                                       'saved_direction'):  # save movement direction if player leave detection zone
                             self.saved_direction = self.direction.x
-                        self.player_detected = True # then set detection flag true
+                        self.player_detected = True  # then set detection flag true
                         if not self.attacking and not self.attack_cd.active:
                             self.attack()  # start attack
-                            self.attack_cd.activate() # cooldown
-                    self.flip = x_distance < 0 # flipping enemy model based on direction
-                else: # if player not in detection range:
+                            self.attack_cd.activate()  # cooldown
+                    self.flip = x_distance < 0  # flipping enemy model based on direction
+                else:  # if player not in detection range:
                     if self.player_detected:
-                        self.player_detected = False # set detection flag to false
+                        self.player_detected = False  # set detection flag to false
                         self.direction.x = getattr(self, 'saved_direction')
                 break
         # continue attacking after spotting and finishing first attack cycle
@@ -382,8 +390,8 @@ class Enemy(AnimatedSprite):
                                      self.rect.midright[1] - 10 * SCALE)
                     # create projectile entity for each attack cycle
                     self.create_projectile(spawn_pos, -1 if self.flip else 1)
-                    self.attack_cd.activate() # activate attack cd
-                    self.attacking = False # not attacking so no attack animation frames in between cooldown
+                    self.attack_cd.activate()  # activate attack cd
+                    self.attacking = False  # not attacking so no attack animation frames in between cooldown
             if self.direction.x != 0:
                 self.state = 'walk'
                 self.flip = self.direction.x < 0
@@ -412,22 +420,15 @@ class Projectile(AnimatedSprite):
         }
         self.direction = pygame.Vector2()
         self.direction.x = direction
-        self.speed = SPEED * 1.1 # projectile speed
+        self.speed = SPEED * 1.1  # projectile speed
         self.flip = False
-        self.damage = 1 # projectile damage
+        self.damage = 1  # projectile damage
         self.damaged_player = False
 
         self.hitbox_offset = 10 * SCALE
         self.proj_hitbox = self.rect.inflate(-(self.rect.width - 18 * SCALE), -(self.rect.height - 18 * SCALE))
         self.rect.center = self.proj_hitbox.center
-        self.kill_proj = Timer(1500, self.kill, autostart=True) # deleting projectile after it flew given distance
-
-    def animate(self, dt):
-        speed = self.animation_speed['idle']
-        self.frame_index += speed * dt
-
-        self.image = self.animations['idle'][int(self.frame_index) % len(self.animations['idle'])]
-        self.image = pygame.transform.flip(self.image, self.flip, False)
+        self.kill_proj = Timer(1500, self.kill, autostart=True)  # deleting projectile after it flew given distance
 
     def move(self, dt):
         self.rect.x += self.direction.x * self.speed * dt
@@ -466,13 +467,6 @@ class Money(AnimatedSprite):
             'idle': 10,
         }
         self.value = 100
-
-    def animate(self, dt):
-        speed = self.animation_speed['idle']
-        self.frame_index += speed * dt
-
-        self.image = self.animations['idle'][int(self.frame_index) % len(self.animations['idle'])]
-        self.image = pygame.transform.flip(self.image, self.flip, False)
 
     def update(self, dt):
         self.animate(dt)

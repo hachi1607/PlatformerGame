@@ -1,10 +1,12 @@
 from settings import *
 from sprites import Player, Enemy
 
+
 class AllSprites(pygame.sprite.Group):
     '''
     Handles proper displaying of all sprites from all groups properly on the display
     '''
+
     def __init__(self):
         """
         Calls games surface to draw sprites on
@@ -55,11 +57,13 @@ class AllSprites(pygame.sprite.Group):
             if player_sprite.attacking:
                 kick_img = player_sprite.animations['kick']
                 kick_img = pygame.transform.scale(player_sprite.animations['kick'], (
-                int(kick_img.get_width() * SCALE * 0.6), int(kick_img.get_height() * SCALE * 0.6)))
+                    int(kick_img.get_width() * SCALE * 0.6), int(kick_img.get_height() * SCALE * 0.6)))
                 if player_sprite.flip:
                     kick_img = pygame.transform.flip(kick_img, True, False)
-                    kick_rect = kick_img.get_rect(left=player_sprite.attack_hitbox.left, centery=player_sprite.attack_hitbox.centery - 15
-                    )
+                    kick_rect = kick_img.get_rect(left=player_sprite.attack_hitbox.left,
+                                                  centery=player_sprite.attack_hitbox.centery - 15
+                                                  )
                 else:
-                    kick_rect = kick_img.get_rect(right=player_sprite.attack_hitbox.right, centery=player_sprite.attack_hitbox.centery - 15)
+                    kick_rect = kick_img.get_rect(right=player_sprite.attack_hitbox.right,
+                                                  centery=player_sprite.attack_hitbox.centery - 15)
                 self.display_surface.blit(kick_img, kick_rect.topleft + self.offset)

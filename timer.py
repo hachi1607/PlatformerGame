@@ -1,9 +1,10 @@
 import pygame.time
 from settings import *
 
+
 # Zastepuje eventy pygame
 class Timer:
-    def __init__(self, duration, func=None, repeat = None, autostart=False):
+    def __init__(self, duration, func=None, repeat=None, autostart=False):
         self.duration = duration
         self.start_time = 0
         self.active = False
